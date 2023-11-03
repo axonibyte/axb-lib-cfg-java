@@ -70,8 +70,20 @@ public class Config {
    *
    * @param key the string associated with the parameter
    */
-  Param getParam(String key) {
+  public Param getParam(String key) {
     return configParams.get(key);
+  }
+
+  /**
+   * Defines a parameter to be potentially used by the user.
+   *
+   * @param the {@link Parameter} to be defined
+   */
+  public void defineParam(Param param) {
+    String path = param.toString().strip();
+    if(configParams.containsKey(path))
+      throw new RuntimeException("Duplicate parameter defined");
+    configParams.put(path, param);
   }
   
   /**
