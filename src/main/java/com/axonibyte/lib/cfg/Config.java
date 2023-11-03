@@ -104,12 +104,20 @@ public class Config {
     return val;
   }
 
-  private Object resolve(Param param) {
+  /**
+   * Resolves a configuration parameter into its respective argument, its
+   * default (if such an argument does not exist), or the argument of its
+   * detoured parameter, if one has been specified.
+   *
+   * @param param the parameter to query
+   * @return the argument, if one exists; otherwise, {@code null}
+   */
+  public Object resolve(Param param) {
     if(configVals.containsKey(param)) return configVals.get(param);
     var detour = param.getDetour();
     return (detour instanceof Param) ? resolve((Param)detour) : detour;
   }
-
+  
   /**
    * Retrieves the String value of the requested config value.
    *
