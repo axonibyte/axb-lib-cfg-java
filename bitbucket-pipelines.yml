@@ -1,7 +1,7 @@
 image: atlassian/default-image:4
 
 mirror: &mirror
-  name: Mirror repository
+  name: mirror repo
   clone:
     enabled: false
   script:
