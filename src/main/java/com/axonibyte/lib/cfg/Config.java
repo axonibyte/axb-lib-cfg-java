@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2023 Axonibyte Innovations, LLC. All rights reserved.
+ * Copyright (c) 2019-2024 Axonibyte Innovations, LLC. All rights reserved.
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -95,12 +95,13 @@ public class Config {
    * @return the argument, if one exists; otherwise, {@code null}
    * @throws BadParamException if there was no argument or appropriate detour
    */
-  public Object resolve(String param) throws BadParamException {
+  public Object resolve(Object param) throws BadParamException {
+    String key = null == param ? null : param.toString();
     Object val = null;
-    if(null == param
-        || !configParams.containsKey(param)
-        || null == (val = resolve(configParams.get(param))))
-      throw new BadParamException(param);
+    if(null == key
+        || !configParams.containsKey(key)
+        || null == (val = resolve(configParams.get(key))))
+      throw new BadParamException(key);
     return val;
   }
 
@@ -126,7 +127,7 @@ public class Config {
    * @throws BadParamException iff the argument that corresponds with the
    *         provided parameter is either undefined or {@code null}
    */
-  public String getString(String param) throws BadParamException {
+  public String getString(Object param) throws BadParamException {
     return String.valueOf(resolve(param));
   }
 
@@ -139,7 +140,7 @@ public class Config {
    *         parameter is undefined or {@code null}, or if said value could not be
    *         converted to a char
    */
-  public char getChar(String param) throws BadParamException {
+  public char getChar(Object param) throws BadParamException {
     var arg = getString(param);
     if(1 != arg.length()) throw new BadParamException(param);
     return arg.charAt(0);
@@ -153,7 +154,7 @@ public class Config {
    * @throws BadParamException if the value that corresponds with
    *         the provided parameter is undefined or {@code null}
    */
-  public boolean getBoolean(String param) throws BadParamException {
+  public boolean getBoolean(Object param) throws BadParamException {
     return Boolean.parseBoolean(getString(param));
   }
 
@@ -166,7 +167,7 @@ public class Config {
    *         the provided parameter is undefined or {@code null}, or if
    *         said value could not be converted to an integer
    */
-  public int getInteger(String param) throws BadParamException {
+  public int getInteger(Object param) throws BadParamException {
     try {
       return Integer.parseInt(getString(param));
     } catch(NumberFormatException e) {
@@ -183,7 +184,7 @@ public class Config {
    *         the provided parameter is undefined or {@code null}, or
    *         if said value could not be converted to a long datum
    */
-  public long getLong(String param) throws BadParamException {
+  public long getLong(Object param) throws BadParamException {
     try {
       return Long.parseLong(getString(param));
     } catch(NumberFormatException e) {
@@ -192,7 +193,7 @@ public class Config {
   }
 
   /**
-   * Retrieves the double value of the requested config option.
+   * Retrieves the double-precision floating value of the requested config option.
    *
    * @param param the configuration parameter
    * @return a double datum denoting the value of the requested config option
@@ -200,9 +201,26 @@ public class Config {
    *         the provided parameter is undefined or {@code null}, or if
    *         said value could not be converted to a double datum
    */
-  public double getDouble(String param) throws BadParamException {
+  public double getDouble(Object param) throws BadParamException {
     try {
       return Double.parseDouble(getString(param));
+    } catch(NumberFormatException e) {
+      throw new BadParamException(param);
+    }
+  }
+
+  /**
+   * Retrieves the single-precision floating value of the requested config option.
+   *
+   * @param param the configuration parameter
+   * @return a float datum denoting the value of the requested config option
+   * @throws BadParamException if the value that corresponds with
+   *         the provided parameter is undefined or {@code null}, or if
+   *         said value could not be converted to a float datum
+   */
+  public float getFloat(Object param) throws BadParamException {
+    try {
+      return Float.parseFloat(getString(param));
     } catch(NumberFormatException e) {
       throw new BadParamException(param);
     }
@@ -216,7 +234,7 @@ public class Config {
    * @throws BadParamException if the value that corresponds with
    *         the provided parameter is not of type {@link JSONArray}
    */
-  public JSONArray getArr(String param) throws BadParamException {
+  public JSONArray getArr(Object param) throws BadParamException {
     Object arr = resolve(param);
     if(!(arr instanceof JSONArray)) throw new BadParamException(param);
     return (JSONArray)arr;
@@ -260,11 +278,13 @@ public class Config {
      *
      * @param param the configuration parameter that could not be retrieved
      */
-    public BadParamException(String param) {
+    public BadParamException(Object param) {
       super(
-          String.format(
+          null == param
+          ? "Null parameter encountered."
+          : String.format(
               "Argument for parameter %1$s was not defined or has the wrong type.",
-              param));
+              param.toString()));
     }
   }
   
