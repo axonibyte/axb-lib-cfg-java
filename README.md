@@ -1,6 +1,6 @@
 # Axonibyte Java Library Suite - Configuration
 
-Copyright (c) 2023 Axonibyte Innovations, LLC. All rights reserved.
+Copyright (c) 2023-2026 Axonibyte Innovations, LLC. All rights reserved.
 
 This Java library handles command line and file-based configuration loading for
 Java projects. Libraries currently exist that parse command line argument, but
